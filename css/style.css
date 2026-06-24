@@ -3,6 +3,7 @@
 
 @font-face { font-family:"Redaction"; src:url("../fonts/Redaction.otf") format("opentype"); font-display:swap; }
 @font-face { font-family:"Redaction 20"; src:url("../fonts/Redaction20.otf") format("opentype"); font-display:swap; }
+@font-face { font-family:"Redaction 100"; src:url("../fonts/Redaction100.otf") format("opentype"); font-display:swap; }
 @font-face { font-family:"Geist Mono"; src:url("../fonts/GeistMono-Regular.ttf") format("truetype"); font-weight:400; font-display:swap; }
 @font-face { font-family:"Geist Mono"; src:url("../fonts/GeistMono-Medium.ttf") format("truetype"); font-weight:500; font-display:swap; }
 
@@ -35,14 +36,16 @@ a:hover{ color:var(--accent); }
 }
 .mark{
   width:128px; height:128px; border-radius:28px;
-  /* a single soft static glow — no animation, no gradient fill */
-  box-shadow:0 0 90px -10px rgba(125,207,182,.22);
+  /* drop-shadow traces the PNG alpha, so the glow hugs the mark (box-shadow left a gap) */
+  filter:drop-shadow(0 0 34px rgba(125,207,182,.30));
 }
 .wordmark{
   font-family:"Redaction", Georgia, serif; font-weight:400;
   font-size:clamp(56px, 11vw, 132px); line-height:.9; letter-spacing:-.01em;
-  margin:0; color:#fafafa;
+  margin:0; color:#fafafa; cursor:default;
 }
+/* the redaction.us gag: grade bleeds heavier on hover */
+.wordmark:hover{ font-family:"Redaction 100", Georgia, serif; }
 .lede{
   max-width:50ch; margin:0; color:var(--muted);
   font-size:clamp(15px,2.4vw,18px); line-height:1.65;
