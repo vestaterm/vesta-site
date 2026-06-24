@@ -51,8 +51,7 @@ a:hover{ color:var(--accent); }
   line-height:1; height:1em;
 }
 /* the redaction.us gag: each character bleeds heavier as you hover it */
-.wordmark span:hover,
-.brand span:hover{ font-family:"Redaction 100", Georgia, serif; }
+.wordmark span:hover{ font-family:"Redaction 100", Georgia, serif; }
 .lede{
   max-width:50ch; margin:0; color:var(--muted);
   font-size:clamp(15px,2.4vw,18px); line-height:1.65;
