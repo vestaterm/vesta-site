@@ -129,6 +129,11 @@
             quitting or crashing — and survive closing a window — then reattach on next launch with
             native scrollback restored. With <code>vesta-persist-scrollback</code> enabled, scrollback
             also mirrors to disk so it survives a daemon restart (off by default).</p>
+          <p>Restore is lazy: at launch only the visible session reattaches; the rest stay listed in
+            the sidebar and attach instantly on first click, so a big saved workspace opens fast.
+            Until a restored session is first activated it won't ring the attention dot — its shell
+            keeps running under the daemon regardless, and plugin <code>pane-output</code> taps
+            still receive its output.</p>
           <p>The sidebar is the single source of truth: every session lives there. Closing a window
             just closes a <em>view</em> — the sessions stay alive and reopen with the window. Closing
             a session (its last pane) kills its shell, so there are no hidden orphans.</p>
