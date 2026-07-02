@@ -105,6 +105,7 @@
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>,</kbd></span><span class="kd">Settings</span></div>
             <div class="row"><span class="ks"><kbd>⌃</kbd><kbd>⌘</kbd><kbd>F</kbd></span><span class="kd">Full screen</span></div>
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>N</kbd></span><span class="kd">New window (shares the same sidebar &amp; sessions)</span></div>
+            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></span><span class="kd">Command palette — search and run any built-in action or plugin command</span></div>
           </div>
 
           <h3>Prefix mode</h3>
@@ -208,8 +209,8 @@ vesta.<span class="a">command</span>(<span class="s">"tests"</span>, <span class
           <table class="tbl">
             <thead><tr><th>API</th><th>What it does</th></tr></thead>
             <tbody>
-              <tr><td class="k">vesta.command(name, fn)</td><td class="desc">Register a command, runnable via <code>vesta run &lt;name&gt;</code> or from a keybind.</td></tr>
-              <tr><td class="k">vesta.bind(chord, fn)</td><td class="desc">Bind a key chord (<code>"cmd+shift+p"</code>, <code>"ctrl+g"</code>, …) to a function.</td></tr>
+              <tr><td class="k">vesta.command(name, fn)</td><td class="desc">Register a named command, runnable via <code>vesta run &lt;name&gt;</code>, from a keybind, or from the <kbd>⌘⇧P</kbd> command palette.</td></tr>
+              <tr><td class="k">vesta.bind(chord, fn)</td><td class="desc">Bind a key chord (<code>"cmd+shift+h"</code>, <code>"ctrl+g"</code>, …) to a function. Lua binds win over built-ins — avoid <code>"cmd+shift+p"</code> (that's the command palette).</td></tr>
               <tr><td class="k">vesta.on(event, fn)</td><td class="desc">Run <code>fn</code> on an <a href="#lua-events">event</a>; the handler gets the relevant paneID.</td></tr>
               <tr><td class="k">vesta.timer(seconds, fn)</td><td class="desc">Call <code>fn</code> every <code>seconds</code> (repeating). Cleared on reload.</td></tr>
               <tr><td class="k">vesta.plugin("owner/repo")</td><td class="desc">Declare a plugin; cloned from GitHub on first launch. See <a href="#lua-plugins">Plugins</a>.</td></tr>
@@ -298,7 +299,8 @@ vesta.<span class="a">panel</span>({
 }, { title = <span class="s">"actions"</span>, corner = <span class="s">"bottomright"</span>, bg = <span class="s">"#16161e"</span>, window = <span class="s">"all"</span> })
 
 <span class="c">-- prompt for text, then run it; or pick from a list</span>
-vesta.<span class="a">bind</span>(<span class="s">"cmd+shift+p"</span>, <span class="a">function</span>()
+<span class="c">-- (⌘⇧P is reserved for the built-in command palette; Lua binds win over built-ins, so use a different chord)</span>
+vesta.<span class="a">bind</span>(<span class="s">"cmd+shift+h"</span>, <span class="a">function</span>()
   vesta.<span class="a">prompt</span>(<span class="s">"Run:"</span>, <span class="a">function</span>(cmd) <span class="a">if</span> cmd ~= <span class="s">""</span> <span class="a">then</span> vesta.send(cmd..<span class="s">"\n"</span>) <span class="a">end</span> <span class="a">end</span>)
 <span class="a">end</span>)
 vesta.<span class="a">pick</span>({ <span class="s">"git status"</span>, <span class="s">"npm test"</span>, <span class="s">"clear"</span> }, <span class="a">function</span>(c) vesta.send(c..<span class="s">"\n"</span>) <span class="a">end</span>)
