@@ -157,7 +157,9 @@ vesta <span class="a">capture</span> --scrollback</pre>
               <tr><td class="k">focus [ID]</td><td class="desc">Focus pane ID, or cycle.</td></tr>
               <tr><td class="k">zoom</td><td class="desc">Toggle zoom on the focused pane.</td></tr>
               <tr><td class="k">send-keys &lt;ID|focused&gt; &lt;text&gt; [--no-enter]</td><td class="desc">Type text into a pane and run it (Enter is appended; <code>--no-enter</code> sends keystrokes without submitting).</td></tr>
+              <tr><td class="k">send-keys --all|--session P.S|--project NAME &lt;text&gt;</td><td class="desc">Broadcast the same text to every pane of a target set: <code>--all</code> = the focused session, <code>--session P.S</code> = one session by its <code>select</code>-style indices, <code>--project NAME</code> = every session of a project. The reply reports how many panes received input.</td></tr>
               <tr><td class="k">capture [ID] [--scrollback]</td><td class="desc">Print a pane's text.</td></tr>
+              <tr><td class="k">pane status &lt;paneID&gt;</td><td class="desc">JSON status for one pane: cwd, title, <code>alive</code> (a process is running under the pty), attention flag, foreground pid, and the owning project / session.</td></tr>
               <tr><td class="k">list</td><td class="desc">List panes / sessions as JSON.</td></tr>
               <tr><td class="k">open [PATH]</td><td class="desc">Open PATH in a new session.</td></tr>
               <tr><td class="k">tab new|next|prev|close</td><td class="desc">Manage sessions.</td></tr>
@@ -165,7 +167,7 @@ vesta <span class="a">capture</span> --scrollback</pre>
               <tr><td class="k">browser [url|port]</td><td class="desc">Open an embedded browser pane.</td></tr>
               <tr><td class="k">reload</td><td class="desc">Re-read the config and apply it live.</td></tr>
               <tr><td class="k">state</td><td class="desc">Dump every window → project → session → pane as JSON (names, cwds, paneIDs, active/live). The whole sidebar, for an agent.</td></tr>
-              <tr><td class="k">sessions</td><td class="desc">Readable list of projects → sessions, with the active one marked <code>▸</code> — the human/agent-friendly view of <code>state</code>.</td></tr>
+              <tr><td class="k">sessions [--json] [--project NAME]</td><td class="desc">Readable list of projects → sessions, with the active one marked <code>▸</code> — the human/agent-friendly view of <code>state</code>. <code>--json</code> returns one structured record per session (id, name, project, cwd, pane count, active/attention); <code>--project</code> filters by project name and implies <code>--json</code>.</td></tr>
               <tr><td class="k">select &lt;project&gt; &lt;session&gt;</td><td class="desc">Switch the active window to a session (0-based indices).</td></tr>
               <tr><td class="k">rename &lt;name&gt;</td><td class="desc">Rename the active session.</td></tr>
               <tr><td class="k">project new|dir|rename|remove|color</td><td class="desc">Manage projects: <code>new [PATH] [--name X]</code> and <code>dir [PATH]</code> take a path or the dir you ran it from; also <code>rename &lt;name&gt;</code>, <code>remove</code>, <code>color &lt;#hex|none&gt;</code>. New sessions open in the project's <code>dir</code>; the sidebar <strong>+</strong> and the titlebar folder icon open a folder picker.</td></tr>
