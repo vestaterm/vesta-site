@@ -68,7 +68,11 @@
               <tr><td class="k">vesta-prefix</td><td class="def">ctrl+b</td><td class="desc">tmux-style prefix key. Empty value disables prefix mode.</td></tr>
               <tr><td class="k">vesta-prefix-bind</td><td class="def">—</td><td class="desc">Rebind a prefix key: <code>&lt;key&gt;:&lt;action&gt;</code>, comma-separated for multiple, e.g. <code>v:split-vertical</code>. Actions: <code>split-vertical</code>, <code>split-horizontal</code>, <code>focus-left/down/up/right</code>, <code>zoom</code>, <code>new-session</code>, <code>next-session</code>, <code>prev-session</code>, <code>rename</code>, <code>detach</code>, <code>kill</code>.</td></tr>
               <tr><td class="k">vesta-persist</td><td class="def">on</td><td class="desc">Run sessions through the background daemon so shells survive Vesta quitting. Set <code>false</code> for plain in-process shells (no persistence).</td></tr>
-              <tr><td class="k">vesta-persist-scrollback</td><td class="def">off</td><td class="desc">Mirror scrollback to disk so it survives a daemon restart. <strong>Off by default</strong> — terminal output can contain passwords/tokens; enable only if you accept on-disk persistence.</td></tr>
+              <tr><td class="k">vesta-persist-scrollback</td><td class="def">off</td><td class="desc">Mirror scrollback to disk so it survives a daemon restart — or the computer rebooting. <strong>Off by default</strong> — terminal output can contain passwords/tokens; enable only if you accept on-disk persistence.</td></tr>
+              <tr><td class="k">vesta-sidebar-tails</td><td class="def">true</td><td class="desc">Session cards show the last ~4 rendered lines of their focused pane. Content-aware for agent TUIs — for Claude Code it anchors on the last <code>⏺</code> block and filters out the input box / status chrome. Also gates whether restored sessions materialize in the background at launch (see <a href="#sessions">Sessions</a>).</td></tr>
+              <tr><td class="k">vesta-sidebar-panes</td><td class="def">false</td><td class="desc">Multi-pane session cards show a tiny split-schematic. With it off, a dim <code>⊞N</code> pane count still shows.</td></tr>
+              <tr><td class="k">vesta-glass-sidebar</td><td class="def">false</td><td class="desc">Translucent sidebar — behind-window blur with the surface color as a tint; the titlebar band over the sidebar matches. Applies on relaunch.</td></tr>
+              <tr><td class="k">vesta-sidebar-opacity</td><td class="def">0.55</td><td class="desc">Strength of the sidebar tint in glass mode, <code>0</code>–<code>1</code>.</td></tr>
             </tbody>
           </table>
         </section>
@@ -84,6 +88,7 @@
               <tr><td class="k">background / foreground</td><td class="desc">Base colors, e.g. <code>#161719</code>.</td></tr>
               <tr><td class="k">cursor-color</td><td class="desc">Cursor color.</td></tr>
               <tr><td class="k">window-padding-x / -y</td><td class="desc">Inner padding around the grid.</td></tr>
+              <tr><td class="k">background-opacity</td><td class="desc">Terminal translucency, e.g. <code>0.9</code> — independent of the sidebar. The titlebar strip over the terminal matches the terminal's own color and opacity.</td></tr>
             </tbody>
           </table>
           <p>Change anything, then <code>Settings ▸ Reload</code> (or <code>vesta reload</code>) — no relaunch.</p>
@@ -105,8 +110,13 @@
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>,</kbd></span><span class="kd">Settings</span></div>
             <div class="row"><span class="ks"><kbd>⌃</kbd><kbd>⌘</kbd><kbd>F</kbd></span><span class="kd">Full screen</span></div>
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>N</kbd></span><span class="kd">New window (shares the same sidebar &amp; sessions)</span></div>
-            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></span><span class="kd">Command palette — search and run any built-in action or plugin command</span></div>
+            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></span><span class="kd">Command palette — search and run any built-in action or plugin command, auto-scaling as you filter</span></div>
           </div>
+
+          <p>Drop files onto a pane and their paths insert shell-escaped, space-separated
+            (matching Terminal.app); drop plain text and it inserts as-is. The <strong>Vesta</strong>
+            menu also has <strong>Make Vesta the Default Terminal</strong>, which registers it as the
+            Shell-role handler for unix executables — the same mechanism Ghostty and iTerm2 use.</p>
 
           <h3>Prefix mode</h3>
           <p>With <code>vesta-prefix</code> set (default <kbd>⌃B</kbd>), press the prefix then a key:</p>
@@ -128,15 +138,35 @@
           <p>Sessions run under a small background daemon (<code>vestad</code>). Shells survive Vesta
             quitting or crashing — and survive closing a window — then reattach on next launch with
             native scrollback restored. With <code>vesta-persist-scrollback</code> enabled, scrollback
-            also mirrors to disk so it survives a daemon restart (off by default).</p>
+            also mirrors to disk so it survives a daemon restart, or the computer rebooting entirely
+            (off by default).</p>
           <p>Restore is lazy: at launch only the visible session reattaches; the rest stay listed in
             the sidebar and attach instantly on first click, so a big saved workspace opens fast.
-            Until a restored session is first activated it won't ring the attention dot — its shell
-            keeps running under the daemon regardless, and plugin <code>pane-output</code> taps
-            still receive its output.</p>
+            With <code>vesta-sidebar-tails</code> on (the default), restored sessions still
+            materialize in the background so their card can show a live output tail; turn it off and
+            they stay fully dormant until clicked. Until a restored session is first activated it
+            won't ring the attention dot — its shell keeps running under the daemon regardless, and
+            plugin <code>pane-output</code> taps still receive its output.</p>
           <p>The sidebar is the single source of truth: every session lives there. Closing a window
             just closes a <em>view</em> — the sessions stay alive and reopen with the window. Closing
             a session (its last pane) kills its shell, so there are no hidden orphans.</p>
+          <p>Each card shows more than a name: an output tail (<code>vesta-sidebar-tails</code>), a
+            pane count or split-schematic for multi-pane sessions (<code>vesta-sidebar-panes</code>),
+            and heat. A session flips amber with a <code>✗</code> and how long ago on an unseen
+            failure, and a soft accent <code>✓</code> on an unseen success — both need
+            shell-integration's OSC&nbsp;133 marks to know a command finished; the bell/attention
+            rail is brightest of all. Actions like close and rename reveal on hover instead of
+            sitting on the card permanently. Projects are full-width dividers in the list, with the
+            session count and the <strong>+</strong> new-session control sharing one slot at the
+            trailing edge; a single-line footer along the bottom carries status text with the app
+            version anchored to the right.</p>
+          <p>The sidebar can go glass — <code>vesta-glass-sidebar</code> makes it translucent with
+            behind-window blur, using the surface color as a tint (strength via
+            <code>vesta-sidebar-opacity</code>); the titlebar band over the sidebar matches, and it
+            applies on relaunch. Terminal translucency is a separate knob — set ghostty's own
+            <code>background-opacity</code> and the titlebar strip over the terminal follows the
+            terminal's own color and opacity. Overlay chrome — the command palette, confirm dialogs,
+            toasts — always renders on native blur ("glass moments"), independent of either opt-in.</p>
           <p>Open more than one window with <kbd>⌘N</kbd>; they all share the same sidebar and session
             pool. Each window views its own session, so you can have a different one live in each.
             If two windows point at the <em>same</em> session, the focused window shows it live and
@@ -342,11 +372,14 @@ vesta.<span class="a">status</span>(<span class="s">"⏱ "</span>..<span class="
           <h3 id="lua-config">Config from Lua</h3>
           <p><code>vesta.set(key, value)</code> sets a config key from your script. Short chrome names
             (<code>accent</code>, <code>surface</code>, <code>font-family</code>,
-            <code>sidebar-width</code>, <code>font-size</code>, <code>divider-width</code>) get the
-            <code>vesta-</code> prefix; any other key is treated as a raw
-            <a href="#ghostty">Ghostty key</a> (e.g. <code>background</code>) and reaches libghostty.
+            <code>sidebar-width</code>, <code>font-size</code>, <code>divider-width</code>,
+            <code>sidebar-opacity</code>, <code>glass-sidebar</code>, <code>sidebar-tails</code>,
+            <code>sidebar-panes</code>, <code>persist-scrollback</code>) get the <code>vesta-</code>
+            prefix; any other key is treated as a raw <a href="#ghostty">Ghostty key</a> (e.g.
+            <code>background</code> or <code>background-opacity</code>) and reaches libghostty.
             <strong>Lua wins</strong> over the config file and the Settings UI — a key set here shows
-            as locked with a “set by init.lua” badge in Settings.</p>
+            as locked in Settings, with a badge reading “overridden by init.lua” (or the plugin's
+            name, if a plugin set it).</p>
 <pre><span class="c">-- a dark theme as a script: chrome + terminal share one background</span>
 vesta.<span class="a">set</span>(<span class="s">"background"</span>, <span class="s">"#0a0b0f"</span>)   <span class="c">-- ghostty terminal bg</span>
 vesta.<span class="a">set</span>(<span class="s">"surface"</span>,    <span class="s">"#0a0b0f"</span>)   <span class="c">-- vesta chrome → vesta-surface</span>
