@@ -171,6 +171,12 @@
             pool. Each window views its own session, so you can have a different one live in each.
             If two windows point at the <em>same</em> session, the focused window shows it live and
             the other shows a muted frozen snapshot — focus a window and the live view follows.</p>
+          <h3>Footprint</h3>
+          <p>Measured on an Apple Silicon MacBook, release build v0.1.28, one window/session with
+            glass on: cold launch to control-socket-ready in <b>&lt;0.4&nbsp;s</b> (warm relaunch with the
+            daemon already up is the same — sessions reattach, nothing restarts); <b>~112&nbsp;MB</b>
+            resident for the app, <b>~7&nbsp;MB</b> for <code>vestad</code>; a <b>9&nbsp;MB</b> DMG.
+            Rendering is libghostty's GPU engine — Vesta adds chrome, not a render path.</p>
         </section>
 
         <section id="cli">
