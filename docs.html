@@ -68,7 +68,7 @@
               <tr><td class="k">vesta-prefix</td><td class="def">ctrl+b</td><td class="desc">tmux-style prefix key. Empty value disables prefix mode.</td></tr>
               <tr><td class="k">vesta-prefix-bind</td><td class="def">—</td><td class="desc">Rebind a prefix key: <code>&lt;key&gt;:&lt;action&gt;</code>, comma-separated for multiple, e.g. <code>v:split-vertical</code>. Actions: <code>split-vertical</code>, <code>split-horizontal</code>, <code>focus-left/down/up/right</code>, <code>zoom</code>, <code>new-session</code>, <code>next-session</code>, <code>prev-session</code>, <code>rename</code>, <code>detach</code>, <code>kill</code>.</td></tr>
               <tr><td class="k">vesta-persist</td><td class="def">on</td><td class="desc">Run sessions through the background daemon so shells survive Vesta quitting. Set <code>false</code> for plain in-process shells (no persistence).</td></tr>
-              <tr><td class="k">vesta-persist-scrollback</td><td class="def">off</td><td class="desc">Mirror scrollback to disk so it survives a daemon restart — or the computer rebooting. <strong>Off by default</strong> — terminal output can contain passwords/tokens; enable only if you accept on-disk persistence.</td></tr>
+              <tr><td class="k">vesta-persist-scrollback</td><td class="def">on</td><td class="desc">Mirror scrollback to disk (mode <code>0600</code>, in Application Support) so it survives a daemon restart — or the computer rebooting, where the restored session comes back with a dim <code>── vesta: session restarted — new shell in &lt;dir&gt; ──</code> divider between the old history and the fresh prompt. <strong>On by default</strong>; terminal output can contain passwords/tokens, so set <code>vesta-persist-scrollback = false</code> to opt out and keep none of it on disk. Read once at daemon start.</td></tr>
               <tr><td class="k">vesta-sidebar-tails</td><td class="def">true</td><td class="desc">Session cards show the last ~4 rendered lines of their focused pane. Content-aware for agent TUIs — for Claude Code it anchors on the last <code>⏺</code> block and filters out the input box / status chrome. Also gates whether restored sessions materialize in the background at launch (see <a href="#sessions">Sessions</a>).</td></tr>
               <tr><td class="k">vesta-sidebar-panes</td><td class="def">false</td><td class="desc">Multi-pane session cards draw their real split layout — nested splits at their ratios, focused pane highlighted. With it off, a dim <code>⊞N</code> pane count still shows.</td></tr>
               <tr><td class="k">vesta-glass-sidebar</td><td class="def">false</td><td class="desc">Translucent sidebar — behind-window blur with the surface color as a tint; the titlebar band over the sidebar matches. Applies on relaunch.</td></tr>
@@ -137,9 +137,12 @@
           <h2>Sessions &amp; persistence</h2>
           <p>Sessions run under a small background daemon (<code>vestad</code>). Shells survive Vesta
             quitting or crashing — and survive closing a window — then reattach on next launch with
-            native scrollback restored. With <code>vesta-persist-scrollback</code> enabled, scrollback
-            also mirrors to disk so it survives a daemon restart, or the computer rebooting entirely
-            (off by default).</p>
+            native scrollback restored. Scrollback also mirrors to disk (<code>0600</code>) by
+            default, so it survives a daemon restart — or the computer rebooting entirely, where the
+            session comes back with its old history above a dim
+            <code>── vesta: session restarted — new shell in &lt;dir&gt; ──</code> divider and a fresh
+            prompt below it. Set <code>vesta-persist-scrollback = false</code> to opt out and keep
+            terminal output off disk entirely.</p>
           <p>Restore is lazy: at launch only the visible session reattaches; the rest stay listed in
             the sidebar and attach instantly on first click, so a big saved workspace opens fast.
             Sidebar order is yours: drag sessions to reorder them within their project, or drag a
@@ -369,17 +372,20 @@ vesta.<span class="a">status</span>(<span class="s">"⏱ "</span>..<span class="
           </div>
           <p>Plugins are sandboxed: a callback that errors repeatedly auto-disables its plugin
             (<code>vesta plugins enable &lt;name&gt;</code> to restore), and an infinite loop in a
-            callback is aborted rather than freezing the UI. With <code>vesta-persist-scrollback</code>
-            enabled, a pane's history also survives a daemon restart (off by default).</p>
+            callback is aborted rather than freezing the UI. A pane's history also survives a daemon
+            restart, since <code>vesta-persist-scrollback</code> is on by default.</p>
 
           <h3 id="lua-config">Config from Lua</h3>
           <p><code>vesta.set(key, value)</code> sets a config key from your script. Short chrome names
             (<code>accent</code>, <code>surface</code>, <code>font-family</code>,
             <code>sidebar-width</code>, <code>font-size</code>, <code>divider-width</code>,
             <code>sidebar-opacity</code>, <code>glass-sidebar</code>, <code>sidebar-tails</code>,
-            <code>sidebar-panes</code>, <code>persist-scrollback</code>) get the <code>vesta-</code>
+            <code>sidebar-panes</code>, <code>persist</code>) get the <code>vesta-</code>
             prefix; any other key is treated as a raw <a href="#ghostty">Ghostty key</a> (e.g.
             <code>background</code> or <code>background-opacity</code>) and reaches libghostty.
+            Daemon-side keys (<code>vesta-persist-scrollback</code>,
+            <code>vesta-shell-integration</code>) are read by <code>vestad</code> from the config file
+            at startup and cannot be set from Lua.
             <strong>Lua wins</strong> over the config file and the Settings UI — a key set here shows
             as locked in Settings, with a badge reading “overridden by init.lua” (or the plugin's
             name, if a plugin set it).</p>
