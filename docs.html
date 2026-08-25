@@ -30,8 +30,8 @@
         <a href="#ghostty">Ghostty keys</a>
         <div class="grp-t">Keys</div>
         <a href="#keys">Keybindings</a>
-        <div class="grp-t">Sessions</div>
-        <a href="#sessions">Sessions &amp; persistence</a>
+        <div class="grp-t">Workspaces</div>
+        <a href="#sessions">Workspaces &amp; persistence</a>
         <div class="grp-t">Control</div>
         <a href="#cli">Agent CLI</a>
         <div class="grp-t">Scripting</div>
@@ -57,8 +57,8 @@
           <table class="tbl">
             <thead><tr><th>Key</th><th>Default</th><th>What it does</th></tr></thead>
             <tbody>
-              <tr><td class="k">vesta-projects</td><td class="def">—</td><td class="desc">Comma-separated project paths for the sidebar (<code>~/a, ~/b</code>).</td></tr>
-              <tr><td class="k">vesta-accent</td><td class="def">theme accent</td><td class="desc">Selection, focus ring, and active-session color.</td></tr>
+              <tr><td class="k">vesta-projects</td><td class="def">—</td><td class="desc">Comma-separated paths (<code>~/a, ~/b</code>), each seeded as a <em>dormant</em> workspace row — clickable, costing no shell until you click it. A path that isn't an existing directory is skipped, and a row already seeded from it is never seeded twice.</td></tr>
+              <tr><td class="k">vesta-accent</td><td class="def">theme accent</td><td class="desc">Selection, focus ring, and active-workspace color.</td></tr>
               <tr><td class="k">vesta-surface</td><td class="def">ghostty background</td><td class="desc">Chrome surface — sidebar, titlebar, gaps. For the terminal background itself, set the ghostty <code>background</code> key (Settings ▸ Terminal bg). Set both to the same value for a seamless window.</td></tr>
               <tr><td class="k">vesta-sidebar-width</td><td class="def">224</td><td class="desc">Sidebar width, in points.</td></tr>
               <tr><td class="k">vesta-font-family</td><td class="def">GeistMono</td><td class="desc">Sidebar / UI text family.</td></tr>
@@ -68,9 +68,9 @@
               <tr><td class="k">vesta-prefix</td><td class="def">ctrl+b</td><td class="desc">tmux-style prefix key. Empty value disables prefix mode.</td></tr>
               <tr><td class="k">vesta-prefix-bind</td><td class="def">—</td><td class="desc">Rebind a prefix key: <code>&lt;key&gt;:&lt;action&gt;</code>, comma-separated for multiple, e.g. <code>v:split-vertical</code>. Actions: <code>split-vertical</code>, <code>split-horizontal</code>, <code>focus-left/down/up/right</code>, <code>zoom</code>, <code>new-session</code>, <code>next-session</code>, <code>prev-session</code>, <code>rename</code>, <code>detach</code>, <code>kill</code>.</td></tr>
               <tr><td class="k">vesta-persist</td><td class="def">on</td><td class="desc">Run sessions through the background daemon so shells survive Vesta quitting. Set <code>false</code> for plain in-process shells (no persistence).</td></tr>
-              <tr><td class="k">vesta-persist-scrollback</td><td class="def">on</td><td class="desc">Mirror scrollback to disk (mode <code>0600</code>, in Application Support) so it survives a daemon restart — or the computer rebooting, where the restored session comes back with a dim <code>── vesta: session restarted — new shell in &lt;dir&gt; ──</code> divider between the old history and the fresh prompt. <strong>On by default</strong>; terminal output can contain passwords/tokens, so set <code>vesta-persist-scrollback = false</code> to opt out and keep none of it on disk. Read once at daemon start.</td></tr>
-              <tr><td class="k">vesta-sidebar-tails</td><td class="def">true</td><td class="desc">Session cards show the last ~4 rendered lines of their focused pane. Content-aware for agent TUIs — for Claude Code it anchors on the last <code>⏺</code> block and filters out the input box / status chrome. Also gates whether restored sessions materialize in the background at launch (see <a href="#sessions">Sessions</a>).</td></tr>
-              <tr><td class="k">vesta-sidebar-panes</td><td class="def">false</td><td class="desc">Multi-pane session cards draw their real split layout — nested splits at their ratios, focused pane highlighted. With it off, a dim <code>⊞N</code> pane count still shows.</td></tr>
+              <tr><td class="k">vesta-persist-scrollback</td><td class="def">on</td><td class="desc">Mirror scrollback to disk (mode <code>0600</code>, in Application Support) so it survives a daemon restart — or the computer rebooting, where the restored workspace comes back with a dim <code>── vesta: session restarted — new shell in &lt;dir&gt; ──</code> divider between the old history and the fresh prompt. <strong>On by default</strong>; terminal output can contain passwords/tokens, so set <code>vesta-persist-scrollback = false</code> to opt out and keep none of it on disk. Read once at daemon start.</td></tr>
+              <tr><td class="k">vesta-sidebar-tails</td><td class="def">true</td><td class="desc">Workspace cards show the last ~4 rendered lines of their focused pane. Content-aware for agent TUIs — for Claude Code it anchors on the last <code>⏺</code> block and filters out the input box / status chrome. Also gates whether restored workspaces materialize in the background at launch (see <a href="#sessions">Workspaces</a>).</td></tr>
+              <tr><td class="k">vesta-sidebar-panes</td><td class="def">false</td><td class="desc">Multi-pane workspace cards draw their real split layout — nested splits at their ratios, focused pane highlighted. With it off, a dim <code>⊞N</code> pane count still shows.</td></tr>
               <tr><td class="k">vesta-glass-sidebar</td><td class="def">false</td><td class="desc">Translucent sidebar — behind-window blur with the surface color as a tint; the titlebar band over the sidebar matches. Applies on relaunch.</td></tr>
               <tr><td class="k">vesta-sidebar-opacity</td><td class="def">0.55</td><td class="desc">Strength of the sidebar tint in glass mode, <code>0</code>–<code>1</code>.</td></tr>
             </tbody>
@@ -99,17 +99,17 @@
           <div class="keys">
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>D</kbd></span><span class="kd">Split vertically</span></div>
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>D</kbd></span><span class="kd">Split horizontally</span></div>
-            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>W</kbd></span><span class="kd">Close pane → session → window</span></div>
-            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>W</kbd></span><span class="kd">Close the session</span></div>
-            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>T</kbd></span><span class="kd">New session</span></div>
+            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>W</kbd></span><span class="kd">Close pane → workspace → window</span></div>
+            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>W</kbd></span><span class="kd">Close the workspace</span></div>
+            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>T</kbd></span><span class="kd">New workspace, at the active one's directory (same as the titlebar <strong>+</strong>)</span></div>
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>]</kbd> <kbd>⌘</kbd><kbd>[</kbd></span><span class="kd">Focus next / previous pane</span></div>
-            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>}</kbd> <kbd>⌘</kbd><kbd>{</kbd></span><span class="kd">Next / previous session</span></div>
-            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>1–9</kbd></span><span class="kd">Select session</span></div>
+            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>}</kbd> <kbd>⌘</kbd><kbd>{</kbd></span><span class="kd">Next / previous workspace</span></div>
+            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>1–9</kbd></span><span class="kd">Select the Nth workspace — flat sidebar order, grouped rows counted too</span></div>
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>B</kbd></span><span class="kd">Toggle sidebar</span></div>
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>⏎</kbd></span><span class="kd">Open a browser pane</span></div>
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>,</kbd></span><span class="kd">Settings</span></div>
             <div class="row"><span class="ks"><kbd>⌃</kbd><kbd>⌘</kbd><kbd>F</kbd></span><span class="kd">Full screen</span></div>
-            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>N</kbd></span><span class="kd">New window (shares the same sidebar &amp; sessions)</span></div>
+            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>N</kbd></span><span class="kd">New window (shares the same sidebar &amp; workspaces)</span></div>
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></span><span class="kd">Command palette — search and run any built-in action or plugin command, auto-scaling as you filter</span></div>
           </div>
 
@@ -125,47 +125,65 @@
             <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>"</kbd></span><span class="kd">Split horizontally</span></div>
             <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>H</kbd><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd></span><span class="kd">Focus pane (or arrows)</span></div>
             <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>Z</kbd></span><span class="kd">Zoom pane</span></div>
-            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>C</kbd></span><span class="kd">New session</span></div>
-            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>N</kbd> <kbd>P</kbd></span><span class="kd">Next / previous session</span></div>
-            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>,</kbd></span><span class="kd">Rename session</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>C</kbd></span><span class="kd">New workspace</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>N</kbd> <kbd>P</kbd></span><span class="kd">Next / previous workspace</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>,</kbd></span><span class="kd">Rename workspace</span></div>
             <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>D</kbd></span><span class="kd">Detach pane (shell keeps running)</span></div>
-            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>X</kbd></span><span class="kd">Kill session</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>X</kbd></span><span class="kd">Kill the focused pane's shell</span></div>
           </div>
         </section>
 
         <section id="sessions">
-          <h2>Sessions &amp; persistence</h2>
-          <p>Sessions run under a small background daemon (<code>vestad</code>). Shells survive Vesta
+          <h2>Workspaces, groups &amp; persistence</h2>
+          <p>One sidebar row is one <strong>workspace</strong>: a terminal session rooted at a
+            directory, with splits inside it — and one workspace is also one "tab" as far as the
+            CLI's <code>tab</code> verb is concerned. There is no project layer above it — a
+            workspace owns its own directory, and the titlebar <strong>+</strong> (or
+            <kbd>⌘T</kbd>) creates one immediately at the active workspace's directory, with no
+            folder picker in the way. Its name defaults to that directory's basename; rename or
+            recolor it from the right-click menu.</p>
+          <p><strong>Groups</strong> are packaging and nothing else — a collapsible header with a
+            name, a color and a member count. A group has no directory and no behavior of its own,
+            it can't be empty (the last member leaving deletes it), <em>Ungroup</em> keeps every
+            workspace while <em>Remove Group…</em> closes them behind a confirm. Drag to reorder
+            anywhere — at the top level or inside a group — and drop an <em>ungrouped</em>
+            top-level row onto a group header to join it; a row that already belongs to a group
+            moves between groups from its right-click menu instead (<em>Move to group</em> /
+            <em>Remove from group</em>). Neighbours slide out of the way and the order persists
+            across restarts.</p>
+          <p>Shells run under a small background daemon (<code>vestad</code>). They survive Vesta
             quitting or crashing — and survive closing a window — then reattach on next launch with
             native scrollback restored. Scrollback also mirrors to disk (<code>0600</code>) by
-            default, so it survives a daemon restart — or the computer rebooting entirely, where the
-            session comes back with its old history above a dim
-            <code>── vesta: session restarted — new shell in &lt;dir&gt; ──</code> divider and a fresh
-            prompt below it. Set <code>vesta-persist-scrollback = false</code> to opt out and keep
-            terminal output off disk entirely.</p>
-          <p>Restore is lazy: at launch only the visible session reattaches; the rest stay listed in
-            the sidebar and attach instantly on first click, so a big saved workspace opens fast.
-            Sidebar order is yours: drag sessions to reorder them within their project, or drag a
-            project divider to move the whole block — neighbors slide out of the way, and the order
-            persists across restarts.
-            With <code>vesta-sidebar-tails</code> on (the default), restored sessions still
+            default, so it survives a daemon restart — or the computer rebooting entirely, which
+            kills every pty. After a reboot a workspace still comes back under its own name, in its
+            sidebar position, with its split layout rebuilt and a <em>fresh shell in the saved
+            directory</em>: the old history replays above a dim
+            <code>── vesta: session restarted — new shell in &lt;dir&gt; ──</code> divider, with the
+            new prompt below it. Set <code>vesta-persist-scrollback = false</code> to opt out and
+            keep terminal output off disk entirely.</p>
+          <p>Restore is lazy: at launch only the visible workspace reattaches; the rest stay listed
+            in the sidebar and attach instantly on first click, so a big saved sidebar opens fast.
+            With <code>vesta-sidebar-tails</code> on (the default), restored workspaces still
             materialize in the background so their card can show a live output tail; turn it off and
-            they stay fully dormant until clicked. Until a restored session is first activated it
+            they stay fully dormant until clicked. Until a restored workspace is first activated it
             won't ring the attention dot — its shell keeps running under the daemon regardless, and
             plugin <code>pane-output</code> taps still receive its output.</p>
-          <p>The sidebar is the single source of truth: every session lives there. Closing a window
-            just closes a <em>view</em> — the sessions stay alive and reopen with the window. Closing
-            a session (its last pane) kills its shell, so there are no hidden orphans.</p>
+          <p>The sidebar is the single source of truth: every workspace lives there, saved in
+            <code>windows.json</code> (flat <code>workspaces</code> + <code>groups</code>, array
+            order = sidebar order). Files from the old Project → Sessions layout migrate on first
+            launch, keeping their order: a one-session project becomes a workspace with the
+            project's name and color, a project with several becomes a group holding them, and the
+            pre-migration file is kept once alongside it in case you downgrade. Closing a window
+            just closes a <em>view</em> — the workspaces stay alive and reopen with the window.
+            Closing a workspace (its last pane) kills its shell, so there are no hidden orphans.</p>
           <p>Each card shows more than a name: an output tail (<code>vesta-sidebar-tails</code>), a
-            pane count or split-schematic for multi-pane sessions (<code>vesta-sidebar-panes</code>),
-            and heat. A session flips amber with a <code>✗</code> and how long ago on an unseen
-            failure, and a soft accent <code>✓</code> on an unseen success — both need
-            shell-integration's OSC&nbsp;133 marks to know a command finished; the bell/attention
-            rail is brightest of all. Actions like close and rename reveal on hover instead of
-            sitting on the card permanently. Projects are full-width dividers in the list, with the
-            session count and the <strong>+</strong> new-session control sharing one slot at the
-            trailing edge; a single-line footer along the bottom carries status text with the app
-            version anchored to the right.</p>
+            pane count or split-schematic for multi-pane workspaces
+            (<code>vesta-sidebar-panes</code>), and heat. A card flips amber with a <code>✗</code>
+            and how long ago on an unseen failure, and a soft accent <code>✓</code> on an unseen
+            success — both need shell-integration's OSC&nbsp;133 marks to know a command finished;
+            the bell/attention rail is brightest of all. Actions like close and rename reveal on
+            hover instead of sitting on the card permanently. A single-line footer along the bottom
+            carries status text with the app version anchored to the right.</p>
           <p>The sidebar can go glass — <code>vesta-glass-sidebar</code> makes it translucent with
             behind-window blur, using the surface color as a tint (strength via
             <code>vesta-sidebar-opacity</code>); the titlebar band over the sidebar matches, and it
@@ -173,10 +191,11 @@
             <code>background-opacity</code> and the titlebar strip over the terminal follows the
             terminal's own color and opacity. Overlay chrome — the command palette, confirm dialogs,
             toasts — always renders on native blur ("glass moments"), independent of either opt-in.</p>
-          <p>Open more than one window with <kbd>⌘N</kbd>; they all share the same sidebar and session
-            pool. Each window views its own session, so you can have a different one live in each.
-            If two windows point at the <em>same</em> session, the focused window shows it live and
-            the other shows a muted frozen snapshot — focus a window and the live view follows.</p>
+          <p>Open more than one window with <kbd>⌘N</kbd>; they all share the same sidebar and
+            workspace pool. Each window views its own workspace, so you can have a different one
+            live in each. If two windows point at the <em>same</em> workspace, the focused window
+            shows it live and the other shows a muted frozen snapshot — focus a window and the live
+            view follows.</p>
         </section>
 
         <section id="cli">
@@ -185,7 +204,7 @@
             (<code>~/Library/Application&nbsp;Support/vesta/control.sock</code>, owner-only) — built so a
             script or an AI agent can run commands and read back what happened. Run bare
             <code>vesta</code> while the app is open and it opens a new window in the running instance.</p>
-<pre><span class="c"># open an isolated worktree session, split it, run tests, read the output</span>
+<pre><span class="c"># open an isolated worktree workspace, split it, run tests, read the output</span>
 vesta <span class="a">worktree</span> fix/login
 vesta <span class="a">split</span> -h
 vesta <span class="a">send-keys</span> focused "npm test"   <span class="c"># Enter is appended → it runs</span>
@@ -199,24 +218,28 @@ vesta <span class="a">capture</span> --scrollback</pre>
               <tr><td class="k">focus [ID]</td><td class="desc">Focus pane ID, or cycle.</td></tr>
               <tr><td class="k">zoom</td><td class="desc">Toggle zoom on the focused pane.</td></tr>
               <tr><td class="k">send-keys &lt;ID|focused&gt; &lt;text&gt; [--no-enter]</td><td class="desc">Type text into a pane and run it (Enter is appended; <code>--no-enter</code> sends keystrokes without submitting).</td></tr>
-              <tr><td class="k">send-keys --all|--session P.S|--project NAME &lt;text&gt;</td><td class="desc">Broadcast the same text to every pane of a target set: <code>--all</code> = the focused session, <code>--session P.S</code> = one session by its <code>select</code>-style indices, <code>--project NAME</code> = every session of a project. The reply reports how many panes received input.</td></tr>
+              <tr><td class="k">send-keys --all|--session N|--project NAME &lt;text&gt;</td><td class="desc">Broadcast the same text to every pane of a target set: <code>--all</code> = the active workspace, <code>--session N</code> = one workspace by its flat index (the legacy <code>P.S</code> pair still works), <code>--project NAME</code> = every workspace in group <code>NAME</code> — an ungrouped row answers to its own name. The reply reports how many panes received input.</td></tr>
               <tr><td class="k">capture [ID] [--scrollback]</td><td class="desc">Print a pane's text.</td></tr>
-              <tr><td class="k">pane status &lt;paneID&gt;</td><td class="desc">JSON status for one pane: cwd, title, <code>alive</code> (a process is running under the pty), attention flag, foreground pid, and the owning project / session.</td></tr>
-              <tr><td class="k">list</td><td class="desc">List panes / sessions as JSON.</td></tr>
-              <tr><td class="k">open [PATH]</td><td class="desc">Open PATH in a new session.</td></tr>
-              <tr><td class="k">tab new|next|prev|close</td><td class="desc">Manage sessions.</td></tr>
-              <tr><td class="k">worktree &lt;branch&gt; [--base REF]</td><td class="desc">Open a git-worktree-isolated session.</td></tr>
+              <tr><td class="k">pane status &lt;paneID&gt;</td><td class="desc">JSON status for one pane: cwd, title, <code>alive</code> (a process is running under the pty), attention flag, foreground pid, and the owning <code>workspace</code> index (plus its <code>group</code>, when it's in one).</td></tr>
+              <tr><td class="k">list</td><td class="desc">List the active workspace's panes as JSON.</td></tr>
+              <tr><td class="k">open [PATH]</td><td class="desc">Open PATH in a new workspace.</td></tr>
+              <tr><td class="k">tab new|next|prev|close</td><td class="desc">Manage workspaces (one workspace = one tab).</td></tr>
+              <tr><td class="k">worktree &lt;branch&gt; [--base REF]</td><td class="desc">Open a git-worktree-isolated workspace.</td></tr>
               <tr><td class="k">browser [url|port]</td><td class="desc">Open an embedded browser pane.</td></tr>
               <tr><td class="k">reload</td><td class="desc">Re-read the config and apply it live.</td></tr>
-              <tr><td class="k">state</td><td class="desc">Dump every window → project → session → pane as JSON (names, cwds, paneIDs, active/live). The whole sidebar, for an agent.</td></tr>
-              <tr><td class="k">sessions [--json] [--project NAME]</td><td class="desc">Readable list of projects → sessions, with the active one marked <code>▸</code> — the human/agent-friendly view of <code>state</code>. <code>--json</code> returns one structured record per session (id, name, project, cwd, pane count, active/attention); <code>--project</code> filters by project name and implies <code>--json</code>.</td></tr>
-              <tr><td class="k">select &lt;project&gt; &lt;session&gt;</td><td class="desc">Switch the active window to a session (0-based indices).</td></tr>
-              <tr><td class="k">rename &lt;name&gt;</td><td class="desc">Rename the active session.</td></tr>
-              <tr><td class="k">project new|dir|rename|remove|color</td><td class="desc">Manage projects: <code>new [PATH] [--name X]</code> and <code>dir [PATH]</code> take a path or the dir you ran it from; also <code>rename &lt;name&gt;</code>, <code>remove</code>, <code>color &lt;#hex|none&gt;</code>. New sessions open in the project's <code>dir</code>; the sidebar <strong>+</strong> and the titlebar folder icon open a folder picker.</td></tr>
-              <tr><td class="k">kill &lt;id&gt;</td><td class="desc">Terminate a session's shell under the daemon.</td></tr>
+              <tr><td class="k">state</td><td class="desc">Dump the whole sidebar as JSON for an agent: <code>workspaces</code> (the flat rows — name, cwd, paneIDs, group, color), <code>groups</code> (name, color, collapsed, member indices) and <code>windows</code> (which workspace each one is viewing). A <code>projects</code> compat view rides alongside for scripts written against the old two-level dump.</td></tr>
+              <tr><td class="k">sessions [--json] [--project NAME]</td><td class="desc">Readable list of workspaces, the active one marked <code>▸</code> — the human/agent-friendly view of <code>state</code>. <code>--json</code> returns one structured record per workspace (<code>id</code>, flat <code>workspace</code> index, name, project/group, pane count, active/attention, plus <code>cwd</code> when the row reports one); <code>--project</code> filters by group name and implies <code>--json</code>.</td></tr>
+              <tr><td class="k">select &lt;N&gt;</td><td class="desc">Switch the active window to workspace <code>N</code> (0-based, flat sidebar order). The legacy <code>select &lt;project&gt; &lt;session&gt;</code> pair still resolves, through the top-level rows.</td></tr>
+              <tr><td class="k">rename &lt;name&gt;</td><td class="desc">Rename the active workspace (blank clears the custom name).</td></tr>
+              <tr><td class="k">ws new [PATH] [--name X]</td><td class="desc">Open a new workspace. <code>PATH</code> defaults to the directory you ran the command in, and a relative one resolves against it.</td></tr>
+              <tr><td class="k">ws rename|color|close</td><td class="desc">Act on the active workspace: <code>rename &lt;name&gt;</code>, <code>color &lt;#hex|none&gt;</code>, <code>close</code>.</td></tr>
+              <tr><td class="k">group new [name]</td><td class="desc">Wrap the active workspace in a new group — named after the row unless you pass a name.</td></tr>
+              <tr><td class="k">group rename|color|ungroup|remove</td><td class="desc">Act on the active workspace's group: <code>rename &lt;name&gt;</code>, <code>color &lt;#hex|none&gt;</code>, <code>ungroup</code> (keeps the workspaces), <code>remove</code> (closes them).</td></tr>
+              <tr><td class="k">project rename|remove|color</td><td class="desc">Legacy alias, kept working: acts on the active row's <em>group</em> when it has one, else on the workspace itself. <code>project new</code> is <code>ws new</code>; <code>project dir</code> is gone — each workspace owns its directory, so <code>cd</code> in the shell.</td></tr>
+              <tr><td class="k">kill &lt;id&gt;</td><td class="desc">Terminate a workspace's shell under the daemon.</td></tr>
               <tr><td class="k">notify [--desktop] [--title T] &lt;msg&gt;</td><td class="desc">In-app toast + an entry in the titlebar bell — handy for agents signalling a human. Posts a macOS Notification Center banner when Vesta is backgrounded; <code>--desktop</code> forces one even when focused.</td></tr>
               <tr><td class="k">run &lt;name&gt;</td><td class="desc">Run a command registered with <code>vesta.command(name, fn)</code> in Lua.</td></tr>
-              <tr><td class="k">plugins [list]</td><td class="desc">List installed plugins; disabled ones are marked.</td></tr>
+              <tr><td class="k">plugins [list|sync|enable|disable]</td><td class="desc">Bare <code>vesta plugins</code> (same as <code>plugins list</code>) lists installed plugins with their locked version / ref / commit; disabled ones are marked.</td></tr>
               <tr><td class="k">plugins sync</td><td class="desc"><code>git pull</code> every plugin and reload.</td></tr>
               <tr><td class="k">plugins enable|disable &lt;name&gt;</td><td class="desc">Turn a plugin on/off (persisted) and reload. Also in Settings ▸ Plugins.</td></tr>
             </tbody>
@@ -260,13 +283,13 @@ vesta.<span class="a">command</span>(<span class="s">"tests"</span>, <span class
           <p>Read &amp; drive the terminal (see <a href="#lua-control">below</a>):</p>
           <table class="tbl">
             <tbody>
-              <tr><td class="k">vesta.active()</td><td class="desc">Focused session: <code>{cwd, title, paneID}</code> (or <code>nil</code>).</td></tr>
-              <tr><td class="k">vesta.state()</td><td class="desc">Full tree: <code>{projects = {{name, path, sessions = {…}}, …}}</code>.</td></tr>
+              <tr><td class="k">vesta.active()</td><td class="desc">Focused pane: <code>{cwd, title, paneID}</code> (or <code>nil</code>).</td></tr>
+              <tr><td class="k">vesta.state()</td><td class="desc">The whole sidebar: <code>{workspaces = {{index, name, cwd, panes, paneIDs, group?, color?}, …}, groups = {…}, windows = {…}}</code>. A <code>projects</code> compat view is still included — one pseudo-project per top-level row — but a group has no directory of its own, so its <code>path</code> is just its first member's cwd.</td></tr>
               <tr><td class="k">vesta.capture([scrollback])</td><td class="desc">Focused pane's text as a string; pass <code>true</code> to include scrollback.</td></tr>
               <tr><td class="k">vesta.send(text)</td><td class="desc">Type into the focused pane (include <code>"\n"</code> to run).</td></tr>
               <tr><td class="k">vesta.cmd(verb, …)</td><td class="desc">Run any <a href="#cli">CLI verb</a>; returns its result table.</td></tr>
-              <tr><td class="k">vesta.split([h]) · vesta.tab(a) · vesta.select(p, s)</td><td class="desc">Split (<code>true</code> = horizontal); <code>tab</code> = <code>"new"/"next"/"prev"/"close"</code>; switch session.</td></tr>
-              <tr><td class="k">vesta.open(path) · vesta.zoom() · vesta.browser([url]) · vesta.focus([id])</td><td class="desc">Open a session at a path; zoom the pane; open a browser pane; focus/cycle panes.</td></tr>
+              <tr><td class="k">vesta.split([h]) · vesta.tab(a) · vesta.select(n)</td><td class="desc">Split (<code>true</code> = horizontal); <code>tab</code> = <code>"new"/"next"/"prev"/"close"</code>; <code>select</code> jumps to a workspace by flat index (the legacy <code>(project, session)</code> pair still works, and the reply carries both).</td></tr>
+              <tr><td class="k">vesta.open(path) · vesta.zoom() · vesta.browser([url]) · vesta.focus([id])</td><td class="desc">Open a workspace at a path; zoom the pane; open a browser pane; focus/cycle panes.</td></tr>
             </tbody>
           </table>
           <p>Build UI (see <a href="#lua-ui">below</a>):</p>
@@ -298,9 +321,10 @@ vesta.<span class="a">on</span>(<span class="s">"command-finished"</span>, <span
   <span class="a">elseif</span> out:<span class="a">find</span>(<span class="s">"PASS"</span>) <span class="a">then</span> vesta.notify(<span class="s">"✅ green"</span>) <span class="a">end</span>
 <span class="a">end</span>)
 
-<span class="c">-- count sessions across the whole sidebar</span>
-<span class="a">local</span> n = <span class="s">0</span>
-<span class="a">for</span> _, p <span class="a">in</span> <span class="a">ipairs</span>(vesta.<span class="a">state</span>().projects) <span class="a">do</span> n = n + #p.sessions <span class="a">end</span>
+<span class="c">-- every workspace in the sidebar, and which group (if any) it sits in</span>
+<span class="a">for</span> _, w <span class="a">in</span> <span class="a">ipairs</span>(vesta.<span class="a">state</span>().workspaces) <span class="a">do</span>
+  <span class="a">print</span>(w.index, w.name, w.cwd, w.group <span class="a">or</span> <span class="s">"(ungrouped)"</span>)
+<span class="a">end</span>
 
 <span class="c">-- open a worktree, split, run, read back — via raw cmd()</span>
 vesta.<span class="a">cmd</span>(<span class="s">"worktree"</span>, <span class="s">"fix/login"</span>)
@@ -361,10 +385,10 @@ vesta.<span class="a">status</span>(<span class="s">"⏱ "</span>..<span class="
           <p><code>vesta.on(event, fn)</code> subscribes; <code>vesta.timer(seconds, fn)</code> polls.
             Handlers receive the relevant <code>paneID</code> where it applies.</p>
           <div class="keys">
-            <div class="row"><span class="ks"><code>session-opened</code></span><span class="kd">A session/tab was created (arg: paneID).</span></div>
-            <div class="row"><span class="ks"><code>session-closed</code></span><span class="kd">The user closed a session (arg: paneID).</span></div>
+            <div class="row"><span class="ks"><code>session-opened</code></span><span class="kd">A workspace was created — the event name predates the rename (arg: paneID).</span></div>
+            <div class="row"><span class="ks"><code>session-closed</code></span><span class="kd">The user closed a workspace (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>session-exited</code></span><span class="kd">A shell exited on its own, vs. being closed (arg: paneID).</span></div>
-            <div class="row"><span class="ks"><code>focus-changed</code></span><span class="kd">The active session changed (arg: paneID).</span></div>
+            <div class="row"><span class="ks"><code>focus-changed</code></span><span class="kd">The active workspace changed (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>command-finished</code></span><span class="kd">A foreground command/agent turn returned to the shell (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>dir-changed</code></span><span class="kd">The focused pane's working directory changed (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>pane-output</code></span><span class="kd">Raw output bytes from any live pane: <code>fn(paneID, chunk)</code>. Best-effort/coalesced; persist mode only. Use <code>chunk:find(s, 1, true)</code>.</span></div>
