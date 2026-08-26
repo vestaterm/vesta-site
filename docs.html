@@ -157,7 +157,9 @@
             quitting or crashing — and survive closing a window — then reattach on next launch with
             native scrollback restored. Scrollback also mirrors to disk (<code>0600</code>) by
             default, so it survives a daemon restart — or the computer rebooting entirely, which
-            kills every pty. After a reboot a workspace still comes back under its own name, in its
+            kills every pty. If the daemon itself ever stops responding, a built-in watchdog
+            replaces it within about a minute and panes reconnect on their own — no force-quit
+            needed. After a reboot a workspace still comes back under its own name, in its
             sidebar position, with its split layout rebuilt and a <em>fresh shell in the saved
             directory</em>: the old history replays above a dim
             <code>── vesta: session restarted — new shell in &lt;dir&gt; ──</code> divider, with the
